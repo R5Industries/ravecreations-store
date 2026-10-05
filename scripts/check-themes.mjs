@@ -28,7 +28,7 @@
  * Usage: node scripts/check-themes.mjs [dir...]
  */
 import { readdir, readFile, stat } from 'node:fs/promises';
-import { dirname, join, normalize, relative } from 'node:path';
+import { dirname, join, normalize, relative } from 'node:path/posix';
 import { THEMES_DIR, discoverThemeIds } from './themes.mjs';
 
 const CONTROLS_DIR = 'src/features/storefront/controls';
