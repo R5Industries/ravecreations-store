@@ -1,0 +1,78 @@
+---
+import type { StorefrontShellModel } from '../../features/storefront/models';
+import { MAIN_SITE_LINKS, MAIN_SITE_URL, SOCIAL_LINKS } from './site';
+
+/**
+ * STORE-OWNED. Edit freely — this file belongs to your store.
+ *
+ * Footer links come from the merchant's navigation menu, already filtered to
+ * targets that are actually publishable, so nothing here can render a dead
+ * link. Like the header, this renders on every page.
+ */
+interface Props {
+  model: StorefrontShellModel;
+}
+
+const { model } = Astro.props;
+---
+
+<footer class="mt-16">
+  <div aria-hidden="true" class="h-px bg-gradient-to-r from-brand via-neon-cyan to-neon-yellow"></div>
+  <div class="rave-band">
+    <div class="mx-auto grid max-w-6xl gap-10 px-6 py-12 sm:grid-cols-3">
+      <div>
+        <img src="/brand/rave-logo.svg" alt="" width="410" height="166" class="h-12 w-auto" />
+        <p class="mt-4 max-w-xs text-sm text-muted">
+          Handmade upcycled-silk bracelets &amp; wearable art from Phoenix, AZ.
+        </p>
+      </div>
+      <div role="group" aria-label="Explore RAVE Creations">
+        <h2 class="font-serif text-sm uppercase tracking-widest text-neon-cyan">RAVE Creations</h2>
+        <ul class="mt-4 space-y-2 text-sm text-muted">
+          {
+            MAIN_SITE_LINKS.map((link) => (
+              <li>
+                <a href={link.href} class="hover:text-brand">
+                  {link.text}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+      <div role="group" aria-label="Social">
+        <h2 class="font-serif text-sm uppercase tracking-widest text-neon-cyan">Follow</h2>
+        <ul class="mt-4 space-y-2 text-sm text-muted">
+          {
+            SOCIAL_LINKS.map((link) => (
+              <li>
+                <a href={link.href} rel="noopener noreferrer" class="hover:text-brand">
+                  {link.text}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-line">
+      <div
+        class="mx-auto flex max-w-6xl flex-wrap items-center gap-x-6 gap-y-3 px-6 py-6 text-xs uppercase tracking-widest text-faint"
+      >
+        <span>&copy; {model.storeName}</span>
+        {
+          model.footerLinks.length > 0 && (
+            <nav aria-label="Footer" class="flex flex-wrap items-center gap-x-6 gap-y-3">
+              {model.footerLinks.map((link) => (
+                <a href={link.href} class="hover:text-brand">
+                  {link.text}
+                </a>
+              ))}
+            </nav>
+          )
+        }
+        <a href={MAIN_SITE_URL} class="ml-auto hover:text-brand">ravecreations.art</a>
+      </div>
+    </div>
+  </div>
+</footer>

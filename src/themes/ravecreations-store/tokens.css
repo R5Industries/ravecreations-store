@@ -1,0 +1,148 @@
+/*
+ * ── Brand theming surface ────────────────────────────────────────────────
+ * THIS is the file to edit when you rebrand a clone — colors, fonts, radii.
+ * Upstream (the template) keeps structural CSS in global.css and doesn't touch
+ * this file, so your theme never conflicts when you pull updates.
+ *
+ * Tailwind v4 turns each --color-* into utilities (bg-brand, text-accent, …)
+ * and uses --font-sans / --radius-* as global defaults. See README → Theming.
+ */
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 200 1000;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-wght-normal.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Space Grotesk';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fonts/space-grotesk-latin-wght-normal.woff2') format('woff2');
+}
+
+@theme {
+  /* RAVE Creations — palette ported from ravecreations.art (src/styles/global.css):
+     base-100/200/300, primary magenta, secondary cyan, accent yellow. */
+  --color-brand: #ff37d5;
+  --color-brand-hover: #ff6be0;
+  /* Site's primary-content: deep plum label on magenta (AA contrast). */
+  --color-on-brand: #21001d;
+
+  --color-ink: #faf7ff;
+  --color-accent: #2cf7e9;
+
+  --color-paper: #101014;
+  --color-surface: #17121c;
+  --color-line: #261e2d;
+
+  /* Secondary / tertiary text; both clear 4.5:1 on paper and surface. */
+  --color-muted: #c2bacf;
+  --color-faint: #9d94ad;
+
+  --color-neon-cyan: #2cf7e9;
+  --color-neon-yellow: #ffe566;
+
+  --font-sans: 'Nunito', 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI',
+    sans-serif;
+  /* The shell templates use the "serif" slot for display type: Space Grotesk. */
+  --font-serif: 'Space Grotesk', 'Inter', ui-sans-serif, system-ui, sans-serif;
+
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+}
+
+/*
+ * Content-page prose scale.
+ *
+ * Ordinary custom properties, intentionally OUTSIDE @theme: the core
+ * `.markdown-content` rules consume them directly, and they define no Tailwind
+ * utility namespace. Moving them into @theme would imply a utility-token role
+ * they do not have.
+ *
+ * Every rule that reads one also carries today's value as its final fallback,
+ * so deleting a line here — or replacing this whole file with a design system's
+ * tokens — degrades to the current design rather than to browser defaults.
+ */
+/* Page container. The default is a centred editorial column. */
+:root {
+  --page-max: 72rem;
+  --page-pad-x: 1.5rem;
+  --page-pad-y: 3rem;
+}
+
+:root {
+  --prose-measure: 48rem;
+  --prose-leading: 1.75;
+  --prose-h1-size: 2.25rem;
+  --prose-h1-tracking: -0.02em;
+  --prose-h2-size: 1.5rem;
+  --prose-h2-tracking: -0.01em;
+  --prose-h3-size: 1.125rem;
+}
+
+/* ── RAVE look, ported from the marketing site ────────────────────────────
+   Glass panels with a cyan-tinted edge, neon glow on hover, ambient page glow.
+   Plain CSS so the whole look lives in this theme directory. */
+body {
+  background-image:
+    radial-gradient(60rem 28rem at 8% -8%, rgb(255 55 213 / 0.16), transparent 60%),
+    radial-gradient(50rem 26rem at 100% 0%, rgb(44 247 233 / 0.11), transparent 60%);
+  background-repeat: no-repeat;
+}
+
+.rave-panel {
+  border: 1px solid color-mix(in srgb, var(--color-neon-cyan) 16%, transparent);
+  border-radius: 1.5rem;
+  background: linear-gradient(
+    135deg,
+    var(--color-paper) 0%,
+    color-mix(in srgb, var(--color-surface) 94%, transparent) 58%,
+    color-mix(in srgb, var(--color-neon-cyan) 8%, var(--color-surface)) 100%
+  );
+  box-shadow:
+    0 14px 40px rgb(18 8 23 / 0.3),
+    0 22px 50px color-mix(in srgb, var(--color-neon-cyan) 8%, transparent);
+  transition:
+    box-shadow 280ms ease,
+    border-color 280ms ease;
+}
+
+.rave-panel:hover,
+.rave-panel:focus-within {
+  border-color: color-mix(in srgb, var(--color-brand) 55%, transparent);
+  box-shadow:
+    0 16px 40px rgb(18 8 23 / 0.35),
+    0 0 36px color-mix(in srgb, var(--color-brand) 28%, transparent);
+}
+
+.rave-glass {
+  border-bottom: 1px solid color-mix(in srgb, var(--color-neon-cyan) 22%, transparent);
+  background: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-paper) 92%, transparent) 0%,
+    color-mix(in srgb, var(--color-surface) 88%, transparent) 100%
+  );
+  -webkit-backdrop-filter: blur(12px);
+  backdrop-filter: blur(12px);
+}
+
+.rave-band {
+  background: linear-gradient(
+    135deg,
+    var(--color-surface) 0%,
+    color-mix(in srgb, var(--color-surface) 96%, transparent) 56%,
+    color-mix(in srgb, var(--color-neon-cyan) 10%, var(--color-surface)) 100%
+  );
+}
+
+/* Page-level headings (catalog, category, cart…) get the brand gradient.
+   Product and content-page headings stay solid for readability. */
+.page-shell > h1 {
+  background: linear-gradient(90deg, var(--color-brand), var(--color-neon-cyan), var(--color-neon-yellow));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  font-weight: 700;
+}

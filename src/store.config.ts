@@ -1,18 +1,34 @@
 import type { DeepPartial, SiteConfig } from './config';
 
 /**
- * YOUR store's settings — the one config file you edit. List ONLY what you
- * change; everything else inherits the defaults in `config.ts`. These values
- * are deep-merged on top of those defaults (arrays replace wholesale).
+ * RAVE Creations store settings — list ONLY what differs from the defaults in
+ * `config.ts`. Values are deep-merged on top of them (arrays replace wholesale).
  *
- * Upstream (the template) never edits this file, so pulling template updates
- * won't conflict with your settings. See `store.config.example.ts` for the
- * build-time customization surface. Common overrides:
- *
- *   currency: 'usd',
- *   images: { maxWidth: 1000 },
- *   orderNumber: { offset: 1000 },
+ * Shipping here is only the default for a brand-new store; once shipping is
+ * saved in Admin → Shipping, the Admin copy wins and this block is ignored.
  *
  * Operational switches and integrations belong in Admin → Settings.
  */
-export const storeOverrides: DeepPartial<SiteConfig> = {};
+export const storeOverrides: DeepPartial<SiteConfig> = {
+  storeName: 'RAVE Creations',
+  timeZone: 'America/Phoenix',
+  currency: 'usd',
+  shipping: {
+    enabled: true,
+    zones: [
+      {
+        name: 'United States',
+        countries: ['US'],
+        rates: [
+          { label: 'Standard shipping', amountCents: 500 },
+          {
+            label: 'Local pickup — Phoenix, AZ',
+            pricing: { type: 'pickup', amountCents: 0 },
+          },
+        ],
+        // Free shipping once the subtotal reaches $50.
+        freeOverCents: 5000,
+      },
+    ],
+  },
+};
