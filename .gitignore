@@ -46,3 +46,4 @@ Thumbs.db
 src/styles/themes/
 tsconfig.theme.json
 tsconfig.theme.*.json
+bun.lock
