@@ -42,5 +42,7 @@ export default getViteConfig(
       },
     },
   },
-  { configFile: false },
+  // The dev toolbar stamps data-astro-source-* onto every element in serve mode,
+  // which breaks exact-markup assertions like '<h1>Title</h1>'.
+  { configFile: false, devToolbar: { enabled: false } },
 );

@@ -698,7 +698,7 @@ The order is recorded only after the existing settlement verifier confirms payme
 ### Demo — an agent shops the store
 
 ```sh
-node scripts/agent-demo.mjs https://<your-host> "warm hat" 40
+bun scripts/agent-demo.mjs https://<your-host> "warm hat" 40
 # Search "warm hat" under 40: 3 in-stock candidate(s)
 #   USD 32  Merino Wool Beanie  [merino-wool-beanie]   ← picked (most relevant in budget)
 # → prints the full Stripe checkout URL

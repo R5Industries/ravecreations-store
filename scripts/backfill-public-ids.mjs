@@ -6,9 +6,9 @@
 // reads/writes go through `bunx wrangler d1 execute DB` as a child process —
 // the repository's established transport — never the raw Cloudflare API.
 //
-//   node --experimental-strip-types scripts/backfill-public-ids.mjs --local
-//   node --experimental-strip-types scripts/backfill-public-ids.mjs --remote
-//   node --experimental-strip-types scripts/backfill-public-ids.mjs --local --check
+//   bun scripts/backfill-public-ids.mjs --local
+//   bun scripts/backfill-public-ids.mjs --remote
+//   bun scripts/backfill-public-ids.mjs --local --check
 //
 // Behavior:
 //   - fills ONLY NULL public_id columns; never touches an existing value
