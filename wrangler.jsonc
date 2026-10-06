@@ -40,8 +40,11 @@
 	// deploy environment has the same CACHE_PURGE_SECRET as the Worker:
 	// scripts/deploy.mjs uses it to sign the mandatory post-deploy purge.
 	"cache": {
-		"enabled": false
+		"enabled": true
 	},
+	// Single public hostname (custom domain only), so shared caching is safe.
+	"workers_dev": false,
+	"vars": { "CANONICAL_ORIGIN": "https://shop.ravecreations.art" },
 	// Native Workers rate limiting. Namespace ids are account-scoped; keys also
 	// include the hostname so multiple stores can safely share these namespaces.
 	"ratelimits": [
