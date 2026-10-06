@@ -25,6 +25,7 @@
 	// holds are released by the next shopper's reservation), so a quiet store
 	// retried nothing and kept sold-out-looking stock locked. Five minutes is well
 	// inside the reservation TTL and costs one invocation. Handler: src/worker.ts.
+	"routes": [{ "pattern": "shop.ravecreations.art", "custom_domain": true }],
 	"triggers": { "crons": ["*/5 * * * *"] },
 	"observability": {
 		"enabled": true,
@@ -73,6 +74,7 @@
 		{
 			"binding": "DB",
 			"database_name": "ravecreations-store-db",
+			"database_id": "aa2cba70-b122-450e-8484-23e89d7ff918",
 			"migrations_dir": "migrations"
 		}
 	],
