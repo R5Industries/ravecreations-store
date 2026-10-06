@@ -20,8 +20,8 @@ Everything RAVE-specific is isolated so upstream ([ddyy/minshop](https://github.
 ```bash
 git fetch upstream
 git merge upstream/main        # or: git rebase upstream/main
-npm install && npm run theme:sync && npm test && npm run check && npm run theme:check
-npm run test:storefront-contract
+npm install && bun run theme:sync && npm test && bun run check && bun run theme:check
+bun run test:storefront-contract
 ```
 
 If a contract test fails after an update, a control or model changed upstream: adjust the matching file in
@@ -30,7 +30,7 @@ If a contract test fails after an update, a control or model changed upstream: a
 ## Local demo data
 
 ```bash
-npm run provision:local
-npx wrangler d1 execute DB --local --file=./rave/seed.sql
+bun run provision:local
+bunx wrangler d1 execute DB --local --file=./rave/seed.sql
 bash rave/seed-images.sh
 ```

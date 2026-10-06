@@ -12,8 +12,8 @@ Node ≥ 22.12 and Git. Then:
 ```sh
 nvm use 22
 npm install
-npm run provision:local -- --seed
-npm run dev
+bun run provision:local -- --seed
+bun run dev
 ```
 
 That gives you a seeded local store at the printed URL, with Admin at `/admin`.
@@ -21,7 +21,7 @@ That gives you a seeded local store at the printed URL, with Admin at `/admin`.
 ## The one command that matters
 
 ```sh
-npm run verify
+bun run verify
 ```
 
 This is the green/red gate CI runs: unit tests, Astro diagnostics, the
@@ -29,9 +29,9 @@ production build, the clean-room D1 integration suite, and the MCP typecheck.
 If it's green, your change holds together. Run it before you push, and ideally
 after every meaningful edit.
 
-Useful narrower loops: `npm test` (unit), `npm run check` (diagnostics),
-`npm run preview` (wrangler dev, production mode, needed to test middleware
-and auth), `npm run test:storefront-equivalence` (proves a template refactor
+Useful narrower loops: `npm test` (unit), `bun run check` (diagnostics),
+`bun run preview` (wrangler dev, production mode, needed to test middleware
+and auth), `bun run test:storefront-equivalence` (proves a template refactor
 didn't change rendered output).
 
 ## What makes a PR easy to merge

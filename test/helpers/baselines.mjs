@@ -4,7 +4,7 @@
  * Answers one question only: "did moving the default markup change anything?"
  * It is deliberately strict about structure, so it is NOT part of the normal
  * verify chain — a customized storefront is expected to fail it. See
- * npm run test:storefront-contract for the checks that survive a redesign.
+ * bun run test:storefront-contract for the checks that survive a redesign.
  *
  * Usage: node test/helpers/baselines.mjs <port> [--update]
  */
@@ -189,7 +189,7 @@ if (failures.length > 0) {
   console.error(
     '\nIf the change is intentional, review it like source and re-capture with:',
   );
-  console.error('  npm run test:storefront-equivalence -- --update\n');
+  console.error('  bun run test:storefront-equivalence -- --update\n');
   process.exit(1);
 }
 

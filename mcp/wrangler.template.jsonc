@@ -10,7 +10,7 @@
   //       -e "s/__DB_ID__/<your-database-id>/g" \
   //       mcp/wrangler.template.jsonc > mcp/wrangler.jsonc
   //   wrangler secret put MCP_TOKEN --config mcp/wrangler.jsonc
-  //   npm run mcp:deploy
+  //   bun run mcp:deploy
   "$schema": "../node_modules/wrangler/config-schema.json",
   "name": "__NAME__-mcp",
   "main": "src/index.ts",

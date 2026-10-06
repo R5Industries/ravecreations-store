@@ -301,7 +301,7 @@ supported in this release.
 ## After you change something
 
 ```bash
-npm run theme:check && npm run test:storefront-contract
+bun run theme:check && bun run test:storefront-contract
 ```
 
 The first enforces the import and request-context boundary, following each file
@@ -315,23 +315,23 @@ and the behavior hooks the cart drawer depends on. It ignores classes, wrappers,
 copy, and layout, so a redesign should pass it unchanged.
 
 It does not start a Worker, so it says nothing about response headers. Cache
-control and cache tags are checked by the integration suite in `npm run verify`,
+control and cache tags are checked by the integration suite in `bun run verify`,
 against a real built Worker.
 
 Then look at the result:
 
 ```bash
-npm run dev
+bun run dev
 ```
 
 Check `/`, `/products`, a category, a search result, and a product page, at
 mobile and desktop widths. Try a long product name, a sold-out item, and an
 empty search — those are where card layouts break.
 
-`npm run test:storefront-equivalence` is a different tool: it asserts your HTML
+`bun run test:storefront-equivalence` is a different tool: it asserts your HTML
 matches the *default* design byte-for-byte. It exists for upstream extraction
 work. If you have customized anything, it is supposed to fail, and it is not
-part of `npm run verify`.
+part of `bun run verify`.
 
 ## Your theme, and upstream's
 
@@ -362,9 +362,9 @@ cp -R src/themes/studio src/themes/your-store
 Leave `theme.config.json` naming `your-store`. Then run the gates:
 
 ```bash
-npm run theme:check
-npm run test:storefront-contract
-npm run verify
+bun run theme:check
+bun run test:storefront-contract
+bun run verify
 ```
 
 Provenance: `default`, `studio`, and `market` are original designs written for
@@ -379,7 +379,7 @@ Which theme is active is one value:
 ```
 
 in `theme.config.json`. Change it and rebuild to try another theme;
-`THEME=<id> npm run dev` does the same thing for one command.
+`THEME=<id> bun run dev` does the same thing for one command.
 
 ## Resetting a file
 

@@ -1,2 +1,2 @@
-web: npm run dev
-# mcp: npm run mcp:dev
+web: bun run dev
+# mcp: bun run mcp:dev

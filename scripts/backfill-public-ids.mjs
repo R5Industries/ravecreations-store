@@ -3,7 +3,7 @@
 // Runs OUTSIDE a Worker on purpose: the values must come from the production
 // Web Crypto generator (src/features/ids/publicId.ts), which a SQL-only
 // migration cannot call. A standalone script has no Worker binding, so all
-// reads/writes go through `npx wrangler d1 execute DB` as a child process —
+// reads/writes go through `bunx wrangler d1 execute DB` as a child process —
 // the repository's established transport — never the raw Cloudflare API.
 //
 //   node --experimental-strip-types scripts/backfill-public-ids.mjs --local

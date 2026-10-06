@@ -41,8 +41,8 @@ It's intentionally lightweight and cheap to start. The default deployment uses C
 ```sh
 npm create minshop@latest my-store
 cd my-store
-npm run provision:local -- --seed
-npm run dev
+bun run provision:local -- --seed
+bun run dev
 ```
 
 The initializer creates a clean repository and installs both the storefront and
@@ -97,22 +97,22 @@ npm install
 
 # One shot: build, migrate + seed the local DB, and generate the two local
 # secrets (SECRETS_KEK + AUTH_SECRET) into .dev.vars
-npm run provision:local -- --seed
+bun run provision:local -- --seed
 
-npm run dev                        # http://localhost:4321
+bun run dev                        # http://localhost:4321
 ```
 
-Storefront is at `/`, admin at `/admin` — first visit lands on the **setup wizard**. There are no provider secrets to fill in by hand: payment/email/Turnstile keys are pasted in **Admin → Settings** and stored encrypted in D1 (see [Settings](#settings)). Granular scripts also exist (`db:migrate`, `db:seed`), `npm run preview` runs the built worker in prod-mode (admin gate active), and `npm run destroy:local` resets the local store.
+Storefront is at `/`, admin at `/admin` — first visit lands on the **setup wizard**. There are no provider secrets to fill in by hand: payment/email/Turnstile keys are pasted in **Admin → Settings** and stored encrypted in D1 (see [Settings](#settings)). Granular scripts also exist (`db:migrate`, `db:seed`), `bun run preview` runs the built worker in prod-mode (admin gate active), and `bun run destroy:local` resets the local store.
 
 ### Tests
 
 ```sh
 npm test          # vitest run (unit tests for pure logic)
-npm run test:watch
-npm run test:d1   # fresh migrations + seed + built Worker against isolated D1
+bun run test:watch
+bun run test:d1   # fresh migrations + seed + built Worker against isolated D1
 ```
 
-Covers the pure functions — `slugify`, the FTS search sanitizer + edit-distance, `parseProductForm`, image validation, cart counting, reservation target aggregation, the order-number scheme, the Access-JWT verifier, pagination clamping, and the whitelisted `orderByClause` sort builders (the SQL-injection boundary for sortable tables). `npm run test:d1` adds clean-room D1 gates for reservation concurrency/release/settlement/legacy compatibility, then boots the production Worker against an isolated database and runs a demo checkout through paid-order settlement and confirmation. `npm run verify` runs both suites, full Astro diagnostics, the production build, and the MCP typecheck/deployment dry run.
+Covers the pure functions — `slugify`, the FTS search sanitizer + edit-distance, `parseProductForm`, image validation, cart counting, reservation target aggregation, the order-number scheme, the Access-JWT verifier, pagination clamping, and the whitelisted `orderByClause` sort builders (the SQL-injection boundary for sortable tables). `bun run test:d1` adds clean-room D1 gates for reservation concurrency/release/settlement/legacy compatibility, then boots the production Worker against an isolated database and runs a demo checkout through paid-order settlement and confirmation. `bun run verify` runs both suites, full Astro diagnostics, the production build, and the MCP typecheck/deployment dry run.
 
 ### Testing payments locally
 
@@ -124,7 +124,7 @@ stripe listen --forward-to localhost:4321/api/webhook
 stripe trigger checkout.session.completed
 ```
 
-The order shows up in `/admin` (and in D1: `npx wrangler d1 execute minshop-db --local --command "SELECT * FROM orders"`).
+The order shows up in `/admin` (and in D1: `bunx wrangler d1 execute minshop-db --local --command "SELECT * FROM orders"`).
 
 ## Deploy
 
@@ -147,35 +147,35 @@ Forks the repo, provisions D1 plus separate R2 buckets for public images (`minsh
 ```sh
 npm create minshop@latest my-store
 cd my-store
-npx wrangler login
-npm run provision:cf my-store      # scripts/provision-cf.sh <slug>
+bunx wrangler login
+bun run provision:cf my-store      # scripts/provision-cf.sh <slug>
 ```
 
 Or **manually**:
 
 ```sh
-npx wrangler login
+bunx wrangler login
 
 # Provision real resources. The committed wrangler.jsonc declares D1/R2 by NAME
 # with no ids (so a one-click / Workers Builds deploy auto-provisions them); for a
 # manual deploy, add the printed database_id to the "DB" entry — or let
 # `wrangler deploy` create it.
-npx wrangler d1 create minshop-db
-npx wrangler r2 bucket create minshop-images
-npx wrangler r2 bucket create minshop-files   # FILES binding; keep private
-npm run db:migrate:remote          # applies migrations/ to the production DB
+bunx wrangler d1 create minshop-db
+bunx wrangler r2 bucket create minshop-images
+bunx wrangler r2 bucket create minshop-files   # FILES binding; keep private
+bun run db:migrate:remote          # applies migrations/ to the production DB
 
 # The only two REQUIRED Worker secrets. The optional cache-purge secret is
 # covered under Caching below. Everything else (Stripe, OpenNode, Lightning,
 # Resend, Turnstile keys + their config) is entered in Admin → Settings and
 # stored encrypted in D1 under SECRETS_KEK.
-openssl rand -base64 32 | npx wrangler secret put AUTH_SECRET   # signs sessions
-openssl rand -base64 32 | npx wrangler secret put SECRETS_KEK   # encrypts the key vault
+openssl rand -base64 32 | bunx wrangler secret put AUTH_SECRET   # signs sessions
+openssl rand -base64 32 | bunx wrangler secret put SECRETS_KEK   # encrypts the key vault
 
-npm run deploy                     # migrate, build, deploy, then purge shared cache if enabled
+bun run deploy                     # migrate, build, deploy, then purge shared cache if enabled
 ```
 
-Then open the site — it funnels to the **setup wizard**: set the admin password (required to finish; until then `/admin/setup` is open, so do it right away or front `/admin` with Access), then paste your payment keys in **Settings → Payments**. Finally point a **production Stripe webhook** at `https://<your-host>/api/webhook/stripe` (events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, and `charge.refunded`; async success fulfils delayed methods, failure/expiry releases held inventory, and `charge.refunded` keeps refunds made in the Stripe Dashboard — including partial ones — in sync with your order totals) and paste its `whsec_…` signing secret in the same card. Tear an instance down with `npm run destroy:cf <slug>`; reset its data in place with `npm run reset:remote`.
+Then open the site — it funnels to the **setup wizard**: set the admin password (required to finish; until then `/admin/setup` is open, so do it right away or front `/admin` with Access), then paste your payment keys in **Settings → Payments**. Finally point a **production Stripe webhook** at `https://<your-host>/api/webhook/stripe` (events: `checkout.session.completed`, `checkout.session.async_payment_succeeded`, `checkout.session.async_payment_failed`, `checkout.session.expired`, and `charge.refunded`; async success fulfils delayed methods, failure/expiry releases held inventory, and `charge.refunded` keeps refunds made in the Stripe Dashboard — including partial ones — in sync with your order totals) and paste its `whsec_…` signing secret in the same card. Tear an instance down with `bun run destroy:cf <slug>`; reset its data in place with `bun run reset:remote`.
 
 ## Admin auth
 
@@ -188,7 +188,7 @@ Both `/admin` **and** `/api/admin/*` are gated by [`src/middleware.ts`](src/midd
 **Forgot the admin password?** The hash lives in your D1 database, so the store owner can always reset it — clearing it drops the store back into the open setup wizard:
 
 ```bash
-npm run admin:reset:remote   # deployed store  (or: npm run admin:reset for local)
+bun run admin:reset:remote   # deployed store  (or: bun run admin:reset for local)
 ```
 
 Then reload `/admin/setup` and set a new one. (Same effect as running `DELETE FROM settings WHERE key='admin_password_hash';` in the Cloudflare dashboard → D1 console.) It requires Cloudflare account access, so it isn't a public reset — and if you run Cloudflare Access you're never locked out in the first place.
@@ -250,7 +250,7 @@ that deploys frequently may add `"cross_version_cache": true` beside
 Worker and its deploy environment (an uncommitted `.dev.vars` is supported).
 Use a dedicated random value so deploy access never requires distributing or
 rotating `AUTH_SECRET`; the latter remains a compatibility fallback.
-`npm run deploy` preflights that secret plus the single canonical hostname,
+`bun run deploy` preflights that secret plus the single canonical hostname,
 deploys, then calls a short-lived HMAC-authenticated Worker endpoint to purge
 the shared cache. It retries transient purge failures. If all attempts fail,
 the new Worker is already live: retry the deploy, then temporarily set
@@ -262,7 +262,7 @@ same value in the deploy machine's uncommitted `.dev.vars`:
 
 ```bash
 openssl rand -base64 32
-npx wrangler secret put CACHE_PURGE_SECRET
+bunx wrangler secret put CACHE_PURGE_SECRET
 ```
 
 ```dotenv
@@ -372,10 +372,10 @@ Deliberately **no runtime plugin system** — Workers bundle at build time, so c
 Schema lives in `migrations/` as numbered, additive SQL files (D1 tracks which have run, so deploys only apply new ones). To evolve the schema, add a new file — never edit an applied one:
 
 ```sh
-npx wrangler d1 migrations create minshop-db add_product_sku   # writes migrations/0002_…
+bunx wrangler d1 migrations create minshop-db add_product_sku   # writes migrations/0002_…
 # edit it (ALTER TABLE / CREATE TABLE — additive, no destructive DROP)
-npm run db:migrate            # local
-npm run db:migrate:remote     # production
+bun run db:migrate            # local
+bun run db:migrate:remote     # production
 ```
 
 `seed.sql` is dev-only sample data (re-runnable), kept separate from schema.
@@ -392,7 +392,7 @@ Most settings are **runtime** — changed in **`/admin/settings`**, stored in a 
 - **Bot protection** — Turnstile toggle + sitekey + secret.
 - **Search** — keyword (FTS5) vs semantic (Workers AI + Vectorize) + reindex.
 
-A few **data-coupled** settings stay build-time (change + `npm run deploy`):
+A few **data-coupled** settings stay build-time (change + `bun run deploy`):
 
 | Setting | Where | Effect |
 |---|---|---|
@@ -401,7 +401,7 @@ A few **data-coupled** settings stay build-time (change + `npm run deploy`):
 | Order number | `orderNumber.{offset,step,randomStep}` in `src/store.config.ts` | Friendly customer-facing number derived from the internal id (e.g. `#1000`). `step` spaces them out; `randomStep` adds jitter to obscure the count (keep `step > randomStep`). The URL/security uses the random `public_id`, not this number |
 | Favicon | replace `public/favicon.svg` and regenerate `public/favicon.ico` | Browser tab icon with a legacy-client fallback |
 
-Change a value, then `npm run deploy`. Currency uses `Intl.NumberFormat`, so `usd → $`, `eur → €`, `gbp → £`, `jpy → ¥` (decimals handled per-currency).
+Change a value, then `bun run deploy`. Currency uses `Intl.NumberFormat`, so `usd → $`, `eur → €`, `gbp → £`, `jpy → ¥` (decimals handled per-currency).
 
 ### Optional upload optimization
 
@@ -410,7 +410,7 @@ The default deployment stores original uploads in R2 and serves them through the
 To optimize new uploads:
 
 1. Uncomment `"images": { "binding": "IMAGES" }` in `wrangler.jsonc` (or add the same binding to a provisioned instance config).
-2. Run `npm run deploy`.
+2. Run `bun run deploy`.
 3. Enable **Optimize images on upload** in Admin → Settings. Optionally override `images.maxWidth` in `src/store.config.ts`.
 
 [Cloudflare Images transformations](https://developers.cloudflare.com/images/pricing/) are available on Free and Paid plans. The Free plan currently includes 5,000 unique transformations per month; when the binding is missing or a transformation fails, minshop stores the original upload instead. Existing R2 objects are not retroactively transformed by this upload-time option.
@@ -622,9 +622,9 @@ The two list tools accept `limit` and `offset` and return the page alongside `to
 ```sh
 cd mcp && npm install && cd ..
 cp mcp/.dev.vars.example mcp/.dev.vars      # set MCP_TOKEN
-npm run mcp:dev                              # local, shares the storefront's local D1
-npm run mcp:check                            # dry-run build
-# deploy: wrangler secret put MCP_TOKEN --config mcp/wrangler.jsonc ; npm run mcp:deploy
+bun run mcp:dev                              # local, shares the storefront's local D1
+bun run mcp:check                            # dry-run build
+# deploy: wrangler secret put MCP_TOKEN --config mcp/wrangler.jsonc ; bun run mcp:deploy
 ```
 
 In production both Workers bind the same D1 (by `database_id`), so the MCP server operates the **real** store automatically. Connect any MCP client to `https://<your-mcp-host>/mcp` (streamable HTTP) with the bearer header. Note: write tools (create/fulfill) change live data — guard the token like a password.

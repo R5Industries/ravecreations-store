@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Per-theme verification: sync, contract suite, type check, build — for the theme
- * this process resolves (usually `THEME=<id> npm run verify:theme`).
+ * this process resolves (usually `THEME=<id> bun run verify:theme`).
  *
  * A script rather than an npm `&&` chain for one reason: `astro check` must be
  * told which theme to type-check. Its default tsconfig follows
@@ -10,7 +10,7 @@
  * env-selected check has to pass its per-theme tsconfig explicitly, and npm
  * scripts cannot interpolate the resolved id portably.
  *
- * Deliberately narrower than `npm run verify`: what it omits (integration,
+ * Deliberately narrower than `bun run verify`: what it omits (integration,
  * MCP, scaffold, Stripe country data) is theme-independent, and re-running it
  * per theme would triple the bill to re-prove the same thing.
  */

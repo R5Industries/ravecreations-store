@@ -26,16 +26,15 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: |
-            package-lock.json
-            mcp/package-lock.json
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install storefront dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Install MCP dependencies
-        run: npm ci --prefix mcp
+        run: bun install --frozen-lockfile --cwd mcp
 
       - name: Create isolated Wrangler configuration
         run: |
@@ -48,7 +47,7 @@ jobs:
             wrangler.template.jsonc > wrangler.jsonc
 
       - name: Run complete verification
-        run: npm run verify
+        run: bun run verify
 
   # Which themes exist is a property of the TREE, not of this file: a generated
   # store carries its merchant-owned theme plus whatever shipped themes it kept,
@@ -104,11 +103,12 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
-          cache: npm
-          cache-dependency-path: package-lock.json
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
 
       - name: Install storefront dependencies
-        run: npm ci
+        run: bun install --frozen-lockfile
 
       - name: Create isolated Wrangler configuration
         run: |
@@ -121,4 +121,4 @@ jobs:
             wrangler.template.jsonc > wrangler.jsonc
 
       - name: Verify the theme builds and honours the contract
-        run: npm run verify:theme
+        run: bun run verify:theme

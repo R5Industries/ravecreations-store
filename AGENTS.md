@@ -9,26 +9,26 @@ recipes, and the traps.
 
 ```sh
 nvm use 22         # REQUIRED — the supported toolchain runs on Node 22
-npm run verify     # complete storefront + D1 + MCP green/red gate
+bun run verify     # complete storefront + D1 + MCP green/red gate
 ```
 
-`npm run verify` is the single signal that a change is sound: it runs unit tests,
+`bun run verify` is the single signal that a change is sound: it runs unit tests,
 full Astro diagnostics, the production build, the clean-room D1 integration, and
 the MCP typecheck/deployment dry run. If it's green, the change holds together.
 Run it after every meaningful edit, not just at the end.
 
-Other commands: `npm run dev` (astro dev), `npm run preview` (wrangler dev =
-production mode, for testing middleware/auth), `npm run db:migrate` (local D1),
+Other commands: `bun run dev` (astro dev), `bun run preview` (wrangler dev =
+production mode, for testing middleware/auth), `bun run db:migrate` (local D1),
 `npm test`.
 
 ### Inspecting local data: use Local Explorer, not the CLI
 
-Any local dev server (`npm run dev`, `npm run preview`) serves Cloudflare's
+Any local dev server (`bun run dev`, `bun run preview`) serves Cloudflare's
 Local Explorer — a UI at `/cdn-cgi/explorer` and a self-describing REST API at
 `/cdn-cgi/explorer/api` covering D1, KV, R2, Durable Objects and Workflows.
 It reads the same local state the app does, with no setup.
 
-Prefer it over `npx wrangler d1 execute --local` for reads and fixture setup:
+Prefer it over `bunx wrangler d1 execute --local` for reads and fixture setup:
 that spawns a process each time (~1.2s) where this is an HTTP call (~0.02s) —
 roughly 70x, which is the difference between checking state freely and avoiding
 it. `GET /cdn-cgi/explorer/api` returns the OpenAPI spec, so the endpoints are
@@ -72,7 +72,7 @@ them encrypted. Deployment-only secrets belong in the platform secret store.
 Never put real credentials, customer data, payment data, personal paths, or
 local environment files in the repository.
 
-Before handing off a customized shop, run `npm run verify` and review
+Before handing off a customized shop, run `bun run verify` and review
 `git diff --check` plus `git status --short`. Add a new numbered migration for
 schema changes; never rewrite a migration that may already have run.
 
@@ -200,8 +200,8 @@ To swap/add a provider, write one adapter file + wire the factory:
   `features/payments/lightning/<name>.ts`; add a case to `getLightningBackend()`.
 - **A shipping zone/rate:** edit `shipping.zones` in `config.ts` default (or
   `store.config.ts`). Pure logic lives in `shipping/calculator.ts` — unit-test it.
-- **A migration:** `npx wrangler d1 migrations create minshop-db <name>` → edit →
-  `npm run db:migrate` (local) → `npm run db:migrate:remote` (prod, before deploy).
+- **A migration:** `bunx wrangler d1 migrations create minshop-db <name>` → edit →
+  `bun run db:migrate` (local) → `bun run db:migrate:remote` (prod, before deploy).
 - **An admin page:** `src/pages/admin/<x>.astro` using `AdminLayout` (add a nav
   entry there). Mutations go through `/api/admin/*` (covered by the auth gate).
 - **A storefront feature behind a flag:** `config.features.<x>` toggle; gate the
@@ -229,7 +229,7 @@ These cost afternoons. Most are in the README "Gotchas" section too.
   `Origin` automatically; `curl` needs `-H "Origin: http://localhost:4321"` +
   `-H "Content-Type: application/x-www-form-urlencoded"`.
 - **Admin auth only enforces in production mode.** `astro dev` bypasses the gate
-  (so you can't lock yourself out). Test login/middleware with `npm run preview`
+  (so you can't lock yourself out). Test login/middleware with `bun run preview`
   (wrangler dev). On a fresh store the password is set via the `/admin/setup`
   wizard (hashed in D1) — there is no `ADMIN_PASSWORD` env var; until one is set,
   `/admin/setup` is open (bootstrap), then the gate locks.
@@ -245,7 +245,7 @@ These cost afternoons. Most are in the README "Gotchas" section too.
   `agents` / `@modelcontextprotocol/sdk` to the ROOT package.json — the Agents SDK
   pulls in workerd/miniflare deps that silently break the storefront's Astro build
   ("require_dist is not a function" in the CF Vite plugin). Install MCP deps in
-  `mcp/` only. Build it independently with `npm run mcp:check` (`npm run verify`
+  `mcp/` only. Build it independently with `bun run mcp:check` (`bun run verify`
   also includes it).
 
 ## Conventions

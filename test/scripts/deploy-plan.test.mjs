@@ -222,6 +222,6 @@ describe('private deliverable provisioning', () => {
     expect(destroy).toContain("recorded_files_bucket=");
     expect(destroy).toContain('if [[ "$files_bucket_deleted" == "1" ]]');
     expect(destroy).toContain('RESIDUAL_RESOURCE=private-files');
-    expect(destroy).toContain('CLEANUP_COMMAND=npx wrangler r2 bucket delete $FILES_BUCKET');
+    expect(destroy).toContain('CLEANUP_COMMAND=bunx wrangler r2 bucket delete $FILES_BUCKET');
   });
 });
